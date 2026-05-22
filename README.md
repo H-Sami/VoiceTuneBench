@@ -4,6 +4,9 @@ VoiceTune Bench helps you preview simple voice presets before you copy the setti
 
 It is made for regular speech: podcasting, streaming, voice chat, meetings, and dialogue. It is not for singing, music mixing, mastering, or creative vocal effects.
 
+<img width="1201" height="733" alt="image" src="https://github.com/user-attachments/assets/575d08f3-6850-4171-9796-ac5051349ab8" />
+
+
 ## What It Does
 
 - Load a local voice sample.
