@@ -4,6 +4,8 @@ namespace VoiceTuneBench.WinUI;
 
 public partial class App : Application
 {
+    private Window? _window;
+
     public App()
     {
         InitializeComponent();
@@ -12,6 +14,7 @@ public partial class App : Application
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        new MainWindow().Activate();
+        _window = new MainWindow();
+        _window.Activate();
     }
 }

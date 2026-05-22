@@ -13,6 +13,8 @@ public sealed class PlaybackController : IDisposable
 
     private WaveOutEvent? _waveOut;
     private FloatArrayWaveProvider? _waveProvider;
+    private int _playbackLength;
+    private int _sampleRate = VoiceSampleLoader.SampleRate;
     private float[]? _originalAudio;
     private float[]? _processedAudio;
     private string? _activeMode;
@@ -36,15 +38,22 @@ public sealed class PlaybackController : IDisposable
     public float[]? ProcessedAudio => _processedAudio;
     public string? ActiveMode => _activeMode;
 
-    public void Start(float[] original, float[] processed, int sampleRate, string mode)
+    public void Start(
+        float[] playbackAudio,
+        float[] originalAudio,
+        float[] processedAudio,
+        int sampleRate,
+        string mode)
     {
         Stop();
 
-        _originalAudio = original;
-        _processedAudio = processed;
+        _playbackLength = playbackAudio.Length;
+        _sampleRate = sampleRate;
+        _originalAudio = originalAudio;
+        _processedAudio = processedAudio;
         _activeMode = mode;
 
-        _waveProvider = new FloatArrayWaveProvider(original, sampleRate);
+        _waveProvider = new FloatArrayWaveProvider(playbackAudio, sampleRate);
         _waveOut = new WaveOutEvent();
         _waveOut.PlaybackStopped += OnPlaybackStopped;
 
@@ -59,6 +68,7 @@ public sealed class PlaybackController : IDisposable
             _waveOut.Dispose();
             _waveOut = null;
             _waveProvider = null;
+            _playbackLength = 0;
             _originalAudio = null;
             _processedAudio = null;
             _activeMode = null;
@@ -90,6 +100,7 @@ public sealed class PlaybackController : IDisposable
         }
 
         _waveProvider = null;
+        _playbackLength = 0;
         _originalAudio = null;
         _processedAudio = null;
         _activeMode = null;
@@ -108,9 +119,8 @@ public sealed class PlaybackController : IDisposable
             return;
         }
 
-        var sampleRate = VoiceSampleLoader.SampleRate;
-        var index = (int)Math.Round(_clock.Elapsed.TotalSeconds * sampleRate);
-        if (index >= _originalAudio.Length)
+        var index = (int)Math.Round(_clock.Elapsed.TotalSeconds * _sampleRate);
+        if (index >= _playbackLength)
         {
             Finish(null);
             return;
@@ -120,7 +130,7 @@ public sealed class PlaybackController : IDisposable
             index,
             _originalAudio,
             _processedAudio,
-            sampleRate,
+            _sampleRate,
             _activeMode ?? "original"));
     }
 
@@ -146,6 +156,7 @@ public sealed class PlaybackController : IDisposable
         var mode = _activeMode;
 
         _waveProvider = null;
+        _playbackLength = 0;
         _originalAudio = null;
         _processedAudio = null;
         _activeMode = null;
