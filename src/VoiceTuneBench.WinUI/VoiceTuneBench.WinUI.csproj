@@ -14,6 +14,7 @@
     <RuntimeIdentifier Condition="'$(Configuration)' == 'Release' and '$(WindowsPackageType)' == 'None'">win-x64</RuntimeIdentifier>
     <SelfContained Condition="'$(Configuration)' == 'Release' and '$(WindowsPackageType)' == 'None'">true</SelfContained>
     <WindowsAppSDKSelfContained Condition="'$(Configuration)' == 'Release' and '$(WindowsPackageType)' == 'None'">true</WindowsAppSDKSelfContained>
+    <WindowsAppSdkDeploymentManagerInitialize Condition="'$(WindowsPackageType)' == 'None'">false</WindowsAppSdkDeploymentManagerInitialize>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <ImplicitUsings>enable</ImplicitUsings>
