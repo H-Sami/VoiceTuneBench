@@ -1,0 +1,55 @@
+<Application
+    x:Class="VoiceTuneBench.WinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <controls:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Color x:Key="VoiceTuneBenchPageBackgroundColor">#0B0F14</Color>
+            <Color x:Key="VoiceTuneBenchSurfaceColor">#111821</Color>
+            <Color x:Key="VoiceTuneBenchRaisedSurfaceColor">#151D28</Color>
+            <Color x:Key="VoiceTuneBenchBorderColor">#253245</Color>
+            <Color x:Key="VoiceTuneBenchPrimaryTextColor">#EEF3FB</Color>
+            <Color x:Key="VoiceTuneBenchMutedTextColor">#92A0B8</Color>
+            <Color x:Key="VoiceTuneBenchSubtleTextColor">#637089</Color>
+            <Color x:Key="VoiceTuneBenchAccentBlueColor">#6EA8FE</Color>
+            <Color x:Key="VoiceTuneBenchPresetGreenColor">#4ADE80</Color>
+            <Color x:Key="VoiceTuneBenchWarningRedColor">#FFD6D6</Color>
+            <Color x:Key="VoiceTuneBenchGraphBackgroundColor">#0F1218</Color>
+
+            <SolidColorBrush x:Key="VoiceTuneBenchPageBackgroundBrush" Color="{StaticResource VoiceTuneBenchPageBackgroundColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchSurfaceBrush" Color="{StaticResource VoiceTuneBenchSurfaceColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchRaisedSurfaceBrush" Color="{StaticResource VoiceTuneBenchRaisedSurfaceColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchBorderBrush" Color="{StaticResource VoiceTuneBenchBorderColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchPrimaryTextBrush" Color="{StaticResource VoiceTuneBenchPrimaryTextColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchMutedTextBrush" Color="{StaticResource VoiceTuneBenchMutedTextColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchSubtleTextBrush" Color="{StaticResource VoiceTuneBenchSubtleTextColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchAccentBlueBrush" Color="{StaticResource VoiceTuneBenchAccentBlueColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchPresetGreenBrush" Color="{StaticResource VoiceTuneBenchPresetGreenColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchWarningRedBrush" Color="{StaticResource VoiceTuneBenchWarningRedColor}" />
+            <SolidColorBrush x:Key="VoiceTuneBenchGraphBackgroundBrush" Color="{StaticResource VoiceTuneBenchGraphBackgroundColor}" />
+
+            <Style TargetType="Button">
+                <Setter Property="Background" Value="{ThemeResource VoiceTuneBenchRaisedSurfaceBrush}" />
+                <Setter Property="Foreground" Value="{ThemeResource VoiceTuneBenchPrimaryTextBrush}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource VoiceTuneBenchBorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="12,8" />
+            </Style>
+
+            <Style TargetType="ComboBox">
+                <Setter Property="Background" Value="{ThemeResource VoiceTuneBenchRaisedSurfaceBrush}" />
+                <Setter Property="Foreground" Value="{ThemeResource VoiceTuneBenchPrimaryTextBrush}" />
+                <Setter Property="BorderBrush" Value="{ThemeResource VoiceTuneBenchBorderBrush}" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="CornerRadius" Value="6" />
+                <Setter Property="Padding" Value="10,6" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

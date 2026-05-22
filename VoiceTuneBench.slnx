@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VoiceTuneBench.Core/VoiceTuneBench.Core.csproj" />
+    <Project Path="src/VoiceTuneBench.WinUI/VoiceTuneBench.WinUI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VoiceTuneBench.Core.Tests/VoiceTuneBench.Core.Tests.csproj" />
+  </Folder>
+</Solution>

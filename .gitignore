@@ -1,0 +1,42 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+*.log
+
+.verify_output*/
+
+# Local/private agent notes
+AGENTS.md
+checkpoint.md
+ROADMAP.md
+docs/
+
+# .NET / WinUI build output and local package cache
+bin/
+obj/
+**/bin/
+**/obj/
+.dotnet/
+.nuget/
+.appdata/
+.localappdata/
+
+# Visual Studio / local user state
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Release artifacts
+artifacts/
+publish/
