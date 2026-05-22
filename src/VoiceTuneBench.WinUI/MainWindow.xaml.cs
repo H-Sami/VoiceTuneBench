@@ -5,6 +5,7 @@ using VoiceTuneBench.WinUI.Audio;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI;
 using Microsoft.UI.Dispatching;
+using Windows.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -31,6 +32,7 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         TryUseMicaBackdrop();
         TryResizeWindow();
+        TryApplyDarkTitleBar();
 
         _playbackTimer = DispatcherQueue.CreateTimer();
         _playbackTimer.Interval = TimeSpan.FromMilliseconds(40);
@@ -284,6 +286,37 @@ public sealed partial class MainWindow : Window
             var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             var appWindow = AppWindow.GetFromWindowId(windowId);
             appWindow.Resize(new SizeInt32(1220, 780));
+        }
+        catch { }
+    }
+
+    private void TryApplyDarkTitleBar()
+    {
+        try
+        {
+            var hWnd = WindowNative.GetWindowHandle(this);
+            var windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+            var tb = appWindow.TitleBar;
+
+            var bg = Color.FromArgb(0, 0, 0, 0);
+            var fg = Color.FromArgb(255, 255, 255, 255);
+            var hoverBg = Color.FromArgb(0x26, 0xFF, 0xFF, 0xFF);
+            var pressedBg = Color.FromArgb(0x52, 0xFF, 0xFF, 0xFF);
+            var inactiveFg = Color.FromArgb(0x99, 0xFF, 0xFF, 0xFF);
+
+            tb.BackgroundColor = bg;
+            tb.ForegroundColor = fg;
+            tb.InactiveBackgroundColor = bg;
+            tb.InactiveForegroundColor = inactiveFg;
+            tb.ButtonBackgroundColor = bg;
+            tb.ButtonForegroundColor = fg;
+            tb.ButtonHoverBackgroundColor = hoverBg;
+            tb.ButtonHoverForegroundColor = fg;
+            tb.ButtonPressedBackgroundColor = pressedBg;
+            tb.ButtonPressedForegroundColor = fg;
+            tb.ButtonInactiveBackgroundColor = bg;
+            tb.ButtonInactiveForegroundColor = inactiveFg;
         }
         catch { }
     }
