@@ -22,10 +22,13 @@ public sealed partial class MainWindow : Window
     private readonly Dictionary<string, float[]> _previewCache = [];
     private readonly PlaybackController _playbackController;
     private readonly DispatcherQueueTimer _playbackTimer;
+    private readonly DispatcherQueueTimer _recordingTimer;
+    private readonly VoiceRecorder _voiceRecorder = new();
 
     private LoadedAudio? _loadedAudio;
     private string _currentPresetDetailsText = string.Empty;
     private bool _isBusy;
+    private bool _isRecording;
 
     public MainWindow()
     {
@@ -38,6 +41,10 @@ public sealed partial class MainWindow : Window
         _playbackTimer.Interval = TimeSpan.FromMilliseconds(40);
         _playbackController = new PlaybackController(_playbackTimer);
 
+        _recordingTimer = DispatcherQueue.CreateTimer();
+        _recordingTimer.Interval = TimeSpan.FromMilliseconds(250);
+        _recordingTimer.Tick += RecordingTimer_Tick;
+
         _playbackController.Progress += OnPlaybackProgress;
         _playbackController.Stopped += OnPlaybackStopped;
 
@@ -45,7 +52,12 @@ public sealed partial class MainWindow : Window
         PresetCombo.DisplayMemberPath = nameof(CuratedPreset.DisplayName);
         PresetCombo.SelectedIndex = 0;
 
-        Closed += (_, _) => _playbackController.Dispose();
+        Closed += (_, _) =>
+        {
+            _recordingTimer.Stop();
+            _voiceRecorder.Dispose();
+            _playbackController.Dispose();
+        };
         RenderPresetDetails(SelectedPreset);
         UpdateButtons();
     }
@@ -97,14 +109,10 @@ public sealed partial class MainWindow : Window
             var loaded = await Task.Run(() => MediaVoiceSampleLoader.LoadVoiceSample(
                 file.Path, maxDurationSeconds: VoiceSampleLoader.PreviewMaxSeconds));
 
-            _playbackController.Stop();
-            _loadedAudio = loaded;
-            _previewCache.Clear();
-            SpectrumGraph.Reset();
-
-            SampleText.Text = $"{file.Name}  |  {loaded.DurationSeconds:0.0}s";
-            StatusText.Text = $"Loaded sample using {loaded.Decoder}.";
-            GraphModeText.Text = "Load a sample, then play original or preset";
+            UseLoadedSample(
+                loaded,
+                $"{file.Name}  |  {loaded.DurationSeconds:0.0}s",
+                $"Loaded sample using {loaded.Decoder}.");
         }
         catch (Exception exc)
         {
@@ -118,12 +126,12 @@ public sealed partial class MainWindow : Window
 
     private async void PlayOriginalButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_loadedAudio == null || _isBusy) return;
+        if (_loadedAudio == null || _isBusy || _isRecording) return;
 
         try
         {
             var processed = await RenderPreviewAudioAsync(SelectedPreset);
-            StartPlayback(_loadedAudio.Audio, processed, mode: "original",
+            StartPlayback(_loadedAudio.Audio, _loadedAudio.Audio, processed, mode: "original",
                 label: "Playing original sample.");
         }
         catch (Exception exc)
@@ -135,12 +143,12 @@ public sealed partial class MainWindow : Window
 
     private async void PlayPresetButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_loadedAudio == null || _isBusy) return;
+        if (_loadedAudio == null || _isBusy || _isRecording) return;
 
         try
         {
             var processed = await RenderPreviewAudioAsync(SelectedPreset);
-            StartPlayback(processed, processed, mode: "preset",
+            StartPlayback(processed, _loadedAudio.Audio, processed, mode: "preset",
                 label: $"Playing preset: {SelectedPreset.DisplayName}");
         }
         catch (Exception exc)
@@ -156,6 +164,41 @@ public sealed partial class MainWindow : Window
         StatusText.Text = "Playback stopped.";
         GraphModeText.Text = "Playback stopped";
         UpdateButtons();
+    }
+
+    private async void RecordButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isBusy)
+        {
+            return;
+        }
+
+        if (_isRecording)
+        {
+            await FinishRecordingAsync();
+            return;
+        }
+
+        try
+        {
+            _playbackController.Stop();
+            SpectrumGraph.Reset();
+            _voiceRecorder.Start(VoiceSampleLoader.PreviewMaxSeconds);
+            _isRecording = true;
+            _recordingTimer.Start();
+            RecordButtonText.Text = "Finish";
+            StatusText.Text = "Recording... speak normally, then click Finish.";
+            GraphModeText.Text = "Recording sample";
+            UpdateButtons();
+        }
+        catch (Exception exc)
+        {
+            await ShowErrorAsync("Recording Failed", exc.Message);
+            _isRecording = false;
+            _recordingTimer.Stop();
+            RecordButtonText.Text = "Record";
+            UpdateButtons();
+        }
     }
 
     private void CopyPresetDetailsButton_Click(object sender, RoutedEventArgs e)
@@ -179,6 +222,23 @@ public sealed partial class MainWindow : Window
         StatusText.Text = $"Selected: {preset.DisplayName}";
         GraphModeText.Text = "Load a sample, then play original or preset";
         UpdateButtons();
+    }
+
+    private async void RecordingTimer_Tick(DispatcherQueueTimer sender, object args)
+    {
+        if (!_isRecording)
+        {
+            return;
+        }
+
+        var elapsed = _voiceRecorder.Elapsed;
+        RecordButtonText.Text = $"Finish {elapsed:mm\\:ss}";
+        StatusText.Text = $"Recording... {elapsed:mm\\:ss}";
+
+        if (elapsed.TotalSeconds >= VoiceSampleLoader.PreviewMaxSeconds)
+        {
+            await FinishRecordingAsync();
+        }
     }
 
     private async Task<float[]> RenderPreviewAudioAsync(CuratedPreset preset)
@@ -206,17 +266,71 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void StartPlayback(float[] audio, float[] processedAudio, string mode, string label)
+    private void StartPlayback(
+        float[] playbackAudio,
+        float[] originalAudio,
+        float[] processedAudio,
+        string mode,
+        string label)
     {
         if (_loadedAudio == null)
             throw new InvalidOperationException("Load a voice sample first.");
 
-        var comparison = MatchLength(processedAudio, _loadedAudio.Audio.Length);
-        _playbackController.Start(audio, comparison, _loadedAudio.SampleRate, mode);
+        var originalComparison = MatchLength(originalAudio, _loadedAudio.Audio.Length);
+        var processedComparison = MatchLength(processedAudio, _loadedAudio.Audio.Length);
+        _playbackController.Start(
+            playbackAudio,
+            originalComparison,
+            processedComparison,
+            _loadedAudio.SampleRate,
+            mode);
 
         StatusText.Text = label;
         GraphModeText.Text = mode == "original" ? "Original highlighted" : "Preset highlighted";
         UpdateButtons();
+    }
+
+    private async Task FinishRecordingAsync()
+    {
+        if (!_isRecording)
+        {
+            return;
+        }
+
+        _recordingTimer.Stop();
+        _isRecording = false;
+        RecordButtonText.Text = "Record";
+
+        try
+        {
+            SetBusy("Preparing recording...");
+            var loaded = await Task.Run(() => _voiceRecorder.Stop());
+            UseLoadedSample(
+                loaded,
+                $"Recorded sample  |  {loaded.DurationSeconds:0.0}s",
+                "Recorded sample is ready.");
+        }
+        catch (Exception exc)
+        {
+            await ShowErrorAsync("Recording Failed", exc.Message);
+        }
+        finally
+        {
+            ClearBusy();
+            UpdateButtons();
+        }
+    }
+
+    private void UseLoadedSample(LoadedAudio loaded, string sampleText, string status)
+    {
+        _playbackController.Stop();
+        _loadedAudio = loaded;
+        _previewCache.Clear();
+        SpectrumGraph.Reset();
+
+        SampleText.Text = sampleText;
+        StatusText.Text = status;
+        GraphModeText.Text = "Load a sample, then play original or preset";
     }
 
     private static float[] MatchLength(float[] audio, int targetLength)
@@ -252,11 +366,12 @@ public sealed partial class MainWindow : Window
     {
         var sampleLoaded = _loadedAudio != null && _loadedAudio.Audio.Length > 0;
         var isPlaying = _playbackController.IsPlaying;
-        PlayOriginalButton.IsEnabled = sampleLoaded && !isPlaying && !_isBusy;
-        PlayPresetButton.IsEnabled = sampleLoaded && !isPlaying && !_isBusy;
-        StopButton.IsEnabled = isPlaying;
-        PresetCombo.IsEnabled = !isPlaying && !_isBusy;
-        LoadButton.IsEnabled = !isPlaying && !_isBusy;
+        PlayOriginalButton.IsEnabled = sampleLoaded && !isPlaying && !_isBusy && !_isRecording;
+        PlayPresetButton.IsEnabled = sampleLoaded && !isPlaying && !_isBusy && !_isRecording;
+        StopButton.IsEnabled = isPlaying && !_isRecording;
+        PresetCombo.IsEnabled = !isPlaying && !_isBusy && !_isRecording;
+        LoadButton.IsEnabled = !isPlaying && !_isBusy && !_isRecording;
+        RecordButton.IsEnabled = !isPlaying && !_isBusy;
     }
 
     private async Task ShowErrorAsync(string title, string message)
@@ -299,10 +414,10 @@ public sealed partial class MainWindow : Window
             var appWindow = AppWindow.GetFromWindowId(windowId);
             var tb = appWindow.TitleBar;
 
-            var bg = Color.FromArgb(0, 0, 0, 0);
+            var bg = Color.FromArgb(255, 23, 29, 38);
             var fg = Color.FromArgb(255, 255, 255, 255);
-            var hoverBg = Color.FromArgb(0x26, 0xFF, 0xFF, 0xFF);
-            var pressedBg = Color.FromArgb(0x52, 0xFF, 0xFF, 0xFF);
+            var hoverBg = Color.FromArgb(255, 37, 48, 64);
+            var pressedBg = Color.FromArgb(255, 49, 64, 84);
             var inactiveFg = Color.FromArgb(0x99, 0xFF, 0xFF, 0xFF);
 
             tb.BackgroundColor = bg;

@@ -9,17 +9,21 @@
                 <controls:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
 
-            <Color x:Key="VoiceTuneBenchPageBackgroundColor">#0B0F14</Color>
-            <Color x:Key="VoiceTuneBenchSurfaceColor">#111821</Color>
-            <Color x:Key="VoiceTuneBenchRaisedSurfaceColor">#151D28</Color>
-            <Color x:Key="VoiceTuneBenchBorderColor">#253245</Color>
+            <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+            <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
+            <Thickness x:Key="ControlBorderThemeThickness">1</Thickness>
+
+            <Color x:Key="VoiceTuneBenchPageBackgroundColor">#10151D</Color>
+            <Color x:Key="VoiceTuneBenchSurfaceColor">#171D26</Color>
+            <Color x:Key="VoiceTuneBenchRaisedSurfaceColor">#202837</Color>
+            <Color x:Key="VoiceTuneBenchBorderColor">#334257</Color>
             <Color x:Key="VoiceTuneBenchPrimaryTextColor">#EEF3FB</Color>
-            <Color x:Key="VoiceTuneBenchMutedTextColor">#92A0B8</Color>
-            <Color x:Key="VoiceTuneBenchSubtleTextColor">#637089</Color>
-            <Color x:Key="VoiceTuneBenchAccentBlueColor">#6EA8FE</Color>
+            <Color x:Key="VoiceTuneBenchMutedTextColor">#A8B3C7</Color>
+            <Color x:Key="VoiceTuneBenchSubtleTextColor">#78869D</Color>
+            <Color x:Key="VoiceTuneBenchAccentBlueColor">#8AB4F8</Color>
             <Color x:Key="VoiceTuneBenchPresetGreenColor">#4ADE80</Color>
             <Color x:Key="VoiceTuneBenchWarningRedColor">#FFD6D6</Color>
-            <Color x:Key="VoiceTuneBenchGraphBackgroundColor">#0F1218</Color>
+            <Color x:Key="VoiceTuneBenchGraphBackgroundColor">#121821</Color>
 
             <SolidColorBrush x:Key="VoiceTuneBenchPageBackgroundBrush" Color="{StaticResource VoiceTuneBenchPageBackgroundColor}" />
             <SolidColorBrush x:Key="VoiceTuneBenchSurfaceBrush" Color="{StaticResource VoiceTuneBenchSurfaceColor}" />
@@ -38,8 +42,11 @@
                 <Setter Property="Foreground" Value="{ThemeResource VoiceTuneBenchPrimaryTextBrush}" />
                 <Setter Property="BorderBrush" Value="{ThemeResource VoiceTuneBenchBorderBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="6" />
-                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+                <Setter Property="MinHeight" Value="40" />
+                <Setter Property="Padding" Value="13,8" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
 
             <Style TargetType="ComboBox">
@@ -47,8 +54,16 @@
                 <Setter Property="Foreground" Value="{ThemeResource VoiceTuneBenchPrimaryTextBrush}" />
                 <Setter Property="BorderBrush" Value="{ThemeResource VoiceTuneBenchBorderBrush}" />
                 <Setter Property="BorderThickness" Value="1" />
-                <Setter Property="CornerRadius" Value="6" />
-                <Setter Property="Padding" Value="10,6" />
+                <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
+                <Setter Property="MaxDropDownHeight" Value="320" />
+                <Setter Property="MinHeight" Value="40" />
+                <Setter Property="Padding" Value="12,6" />
+            </Style>
+
+            <Style TargetType="ComboBoxItem">
+                <Setter Property="MinHeight" Value="38" />
+                <Setter Property="Padding" Value="12,8" />
+                <Setter Property="Foreground" Value="{ThemeResource VoiceTuneBenchPrimaryTextBrush}" />
             </Style>
         </ResourceDictionary>
     </Application.Resources>

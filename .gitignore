@@ -40,3 +40,12 @@ obj/
 # Release artifacts
 artifacts/
 publish/
+*.appinstaller
+*.msix
+*.msixbundle
+*.msixupload
+*.pfx
+*.zip
+
+# Local handoff notes
+recentfixes.md

@@ -9,11 +9,13 @@
     <Title>VoiceTune Bench</Title>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x64</Platforms>
-    <RuntimeIdentifier Condition="'$(Configuration)' == 'Release'">win-x64</RuntimeIdentifier>
-    <SelfContained Condition="'$(Configuration)' == 'Release'">true</SelfContained>
-    <WindowsPackageType>None</WindowsPackageType>
-    <WindowsAppSDKSelfContained Condition="'$(Configuration)' == 'Release'">true</WindowsAppSDKSelfContained>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <WindowsPackageType Condition="'$(WindowsPackageType)' == ''">None</WindowsPackageType>
+    <RuntimeIdentifier Condition="'$(Configuration)' == 'Release' and '$(WindowsPackageType)' == 'None'">win-x64</RuntimeIdentifier>
+    <SelfContained Condition="'$(Configuration)' == 'Release' and '$(WindowsPackageType)' == 'None'">true</SelfContained>
+    <WindowsAppSDKSelfContained Condition="'$(Configuration)' == 'Release' and '$(WindowsPackageType)' == 'None'">true</WindowsAppSDKSelfContained>
     <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -26,5 +28,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VoiceTuneBench.Core\VoiceTuneBench.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\*.png" />
   </ItemGroup>
 </Project>

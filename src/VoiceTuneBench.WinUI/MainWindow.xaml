@@ -13,12 +13,12 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Spacing="2">
+        <StackPanel Grid.Row="0" Spacing="3">
             <TextBlock Text="VoiceTune Bench" FontSize="32" FontWeight="SemiBold" Foreground="{ThemeResource VoiceTuneBenchPrimaryTextBrush}" />
             <TextBlock Text="Speech preset auditioner" FontSize="14" Foreground="{ThemeResource VoiceTuneBenchMutedTextBrush}" />
         </StackPanel>
 
-        <Border Grid.Row="1" Background="{ThemeResource VoiceTuneBenchSurfaceBrush}" BorderBrush="{ThemeResource VoiceTuneBenchBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
+        <Border Grid.Row="1" Background="{ThemeResource VoiceTuneBenchSurfaceBrush}" BorderBrush="{ThemeResource VoiceTuneBenchBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
             <Grid ColumnSpacing="12" RowSpacing="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -27,6 +27,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="300" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -54,7 +55,14 @@
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="PlayOriginalButton" Grid.Row="1" Grid.Column="3" Click="PlayOriginalButton_Click" ToolTipService.ToolTip="Play original audio">
+                <Button x:Name="RecordButton" Grid.Row="1" Grid.Column="3" Click="RecordButton_Click" ToolTipService.ToolTip="Record a voice sample">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE720;" />
+                        <TextBlock x:Name="RecordButtonText" Text="Record" />
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="PlayOriginalButton" Grid.Row="1" Grid.Column="4" Click="PlayOriginalButton_Click" ToolTipService.ToolTip="Play original audio">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <SymbolIcon Symbol="Play" />
                         <TextBlock Text="Original" />
@@ -64,7 +72,7 @@
                 <Button
                     x:Name="PlayPresetButton"
                     Grid.Row="1"
-                    Grid.Column="4"
+                    Grid.Column="5"
                     Click="PlayPresetButton_Click"
                     ToolTipService.ToolTip="Play preset preview">
                     <StackPanel Orientation="Horizontal" Spacing="8">
@@ -73,7 +81,7 @@
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="StopButton" Grid.Row="1" Grid.Column="5" Click="StopButton_Click" ToolTipService.ToolTip="Stop playback">
+                <Button x:Name="StopButton" Grid.Row="1" Grid.Column="6" Click="StopButton_Click" ToolTipService.ToolTip="Stop playback">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <SymbolIcon Symbol="Stop" />
                         <TextBlock Text="Stop" />
@@ -88,7 +96,7 @@
                 <ColumnDefinition Width="2*" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="{ThemeResource VoiceTuneBenchSurfaceBrush}" BorderBrush="{ThemeResource VoiceTuneBenchBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12">
+            <Border Grid.Column="0" Background="{ThemeResource VoiceTuneBenchSurfaceBrush}" BorderBrush="{ThemeResource VoiceTuneBenchBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
                 <Grid RowSpacing="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -106,7 +114,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Column="1" Background="{ThemeResource VoiceTuneBenchSurfaceBrush}" BorderBrush="{ThemeResource VoiceTuneBenchBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12">
+            <Border Grid.Column="1" Background="{ThemeResource VoiceTuneBenchSurfaceBrush}" BorderBrush="{ThemeResource VoiceTuneBenchBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="14">
                 <Grid RowSpacing="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

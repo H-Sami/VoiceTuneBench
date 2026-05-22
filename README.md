@@ -10,6 +10,7 @@ It is made for regular speech: podcasting, streaming, voice chat, meetings, and 
 ## What It Does
 
 - Load a local voice sample.
+- Record a quick voice sample in the app.
 - Pick a speech preset.
 - Listen to the original audio.
 - Listen to the preset preview.
@@ -42,7 +43,7 @@ https://www.elgato.com/us/en/s/downloads
 3. Add ReaEQ first.
 4. Add ReaComp after ReaEQ.
 5. Open VoiceTune Bench.
-6. Load a short voice sample.
+6. Load a short voice sample, or click Record and speak normally.
 7. Try the presets and listen.
 8. Pick the preset that sounds best on your voice.
 9. Click Copy in VoiceTune Bench.
@@ -80,6 +81,14 @@ Test:
 ```powershell
 dotnet test .\tests\VoiceTuneBench.Core.Tests\VoiceTuneBench.Core.Tests.csproj -c Debug -p:Platform=x64
 ```
+
+Build an MSIX package after restore:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\eng\build-msix.ps1
+```
+
+The MSIX output is much smaller and cleaner than the old release ZIP. Sign it with a trusted code-signing certificate before publishing it publicly.
 
 ## Privacy
 
