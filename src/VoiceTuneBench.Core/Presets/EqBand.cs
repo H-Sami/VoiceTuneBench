@@ -11,6 +11,7 @@ public enum EqBandType
     Notch = 6,
 }
 
+/// <summary>A single ReaEQ filter band with type, frequency, gain, and Q.</summary>
 public sealed record EqBand(
     EqBandType BandType,
     double Frequency,

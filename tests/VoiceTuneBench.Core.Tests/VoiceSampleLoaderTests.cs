@@ -22,6 +22,26 @@ public sealed class VoiceSampleLoaderTests
     }
 
     [Fact]
+    public void VoiceSampleLoaderResampledToneMaintainsFrequency()
+    {
+        var sourceRate = 44100;
+        var targetRate = 48000;
+        var frequency = 1000.0;
+        var samples = new float[(int)(sourceRate * 0.5)];
+        for (var i = 0; i < samples.Length; i++)
+        {
+            samples[i] = (float)Math.Sin(2.0 * Math.PI * frequency * i / sourceRate);
+        }
+
+        var resampled = VoiceSampleLoader.PrepareDecodedAudio(
+            samples, sourceRate, channels: 1, decoder: "test", targetSampleRate: targetRate);
+
+        Assert.Equal(targetRate, resampled.SampleRate);
+        var mag = ToneMagnitude(resampled.Audio, targetRate, frequency);
+        Assert.True(mag > 0.01, "Resampled tone should retain its original frequency content");
+    }
+
+    [Fact]
     public void VoiceSampleLoaderRejectsSilence()
     {
         using var temp = new TemporaryDirectory();
@@ -81,6 +101,19 @@ public sealed class VoiceSampleLoaderTests
         {
             writer.Write(sample);
         }
+    }
+
+    private static double ToneMagnitude(float[] audio, int sampleRate, double frequency)
+    {
+        var real = 0.0;
+        var imag = 0.0;
+        for (var i = 0; i < audio.Length; i++)
+        {
+            var angle = 2.0 * Math.PI * frequency * i / sampleRate;
+            real += audio[i] * Math.Cos(angle);
+            imag -= audio[i] * Math.Sin(angle);
+        }
+        return Math.Sqrt(real * real + imag * imag);
     }
 
     private sealed class TemporaryDirectory : IDisposable

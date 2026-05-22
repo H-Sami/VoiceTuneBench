@@ -2,8 +2,10 @@ using System.Numerics;
 
 namespace VoiceTuneBench.Core.Visualization;
 
+/// <summary>Computes a short-time Fourier transform (STFT) magnitude spectrum.</summary>
 public static class SpectrumAnalyzer
 {
+    /// <summary>Computes FFT magnitude spectrum for the given audio segment.</summary>
     public static SpectrumFrame ComputeSpectrum(
         float[] audio,
         int sampleRate,

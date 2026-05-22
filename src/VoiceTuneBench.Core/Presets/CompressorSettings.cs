@@ -1,5 +1,6 @@
 namespace VoiceTuneBench.Core.Presets;
 
+/// <summary>ReaComp-style compressor parameters used for the preview DSP.</summary>
 public sealed record CompressorSettings(
     double ThresholdDb,
     double Ratio,

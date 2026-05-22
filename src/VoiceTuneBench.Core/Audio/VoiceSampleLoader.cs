@@ -1,10 +1,19 @@
 namespace VoiceTuneBench.Core.Audio;
 
+/// <summary>
+/// Loads voice samples from WAV files in the portable core.
+/// The WinUI app layer uses NAudio/Media Foundation for compressed formats
+/// via <see cref="MediaVoiceSampleLoader.LoadVoiceSample"/> in the VoiceTuneBench.WinUI assembly.
+/// </summary>
 public static class VoiceSampleLoader
 {
+    /// <summary>Target sample rate for all loaded audio (48000 Hz).</summary>
     public const int SampleRate = 48000;
+
+    /// <summary>Maximum duration of a preview in seconds (45s).</summary>
     public const double PreviewMaxSeconds = 45.0;
 
+    /// <summary>File extensions supported by the WinUI layer's NAudio/Media Foundation loader.</summary>
     public static readonly IReadOnlyList<string> SupportedExtensions =
     [
         ".wav", ".wave", ".flac", ".aiff", ".aif", ".caf",
@@ -12,6 +21,7 @@ public static class VoiceSampleLoader
         ".mp4", ".mov", ".mkv", ".webm", ".avi", ".wmv", ".wma", ".3gp",
     ];
 
+    /// <summary>Loads a WAV file, decodes it, and returns a prepared mono 48kHz voice sample.</summary>
     public static LoadedAudio LoadVoiceSample(
         string path,
         int targetSampleRate = SampleRate,
@@ -45,6 +55,11 @@ public static class VoiceSampleLoader
             maxDurationSeconds);
     }
 
+    /// <summary>
+    /// Applies standard preparation to decoded PCM audio: downmix to mono,
+    /// resample to 48kHz, DC offset removal, peak normalization, silence
+    /// rejection, and minimum-duration check.
+    /// </summary>
     public static LoadedAudio PrepareDecodedAudio(
         float[] interleavedAudio,
         int sourceSampleRate,
@@ -130,10 +145,7 @@ public static class VoiceSampleLoader
 
     private static float[] ResampleIfNeeded(float[] audio, int sourceSampleRate, int targetSampleRate)
     {
-        if (sourceSampleRate == targetSampleRate)
-        {
-            return audio;
-        }
+        if (sourceSampleRate == targetSampleRate) return audio;
 
         var targetLength = Math.Max(1, (int)Math.Round(audio.Length * targetSampleRate / (double)sourceSampleRate));
         var output = new float[targetLength];
@@ -142,13 +154,41 @@ public static class VoiceSampleLoader
         for (var index = 0; index < targetLength; index++)
         {
             var sourcePosition = index * scale;
-            var leftIndex = (int)Math.Floor(sourcePosition);
-            var rightIndex = Math.Min(leftIndex + 1, audio.Length - 1);
-            var fraction = sourcePosition - leftIndex;
-            output[index] = (float)(audio[leftIndex] * (1.0 - fraction) + audio[rightIndex] * fraction);
+            var i = (int)Math.Floor(sourcePosition);
+            var t = (float)(sourcePosition - i);
+
+            if (i <= 0)
+            {
+                output[index] = audio[0];
+                continue;
+            }
+
+            if (i + 1 >= audio.Length)
+            {
+                output[index] = audio[^1];
+                continue;
+            }
+
+            var p0 = audio[Math.Max(0, i - 1)];
+            var p1 = audio[i];
+            var p2 = audio[i + 1];
+            var p3 = audio[Math.Min(audio.Length - 1, i + 2)];
+
+            output[index] = CatmullRom(p0, p1, p2, p3, t);
         }
 
         return output;
+    }
+
+    private static float CatmullRom(float p0, float p1, float p2, float p3, float t)
+    {
+        var t2 = t * t;
+        var t3 = t2 * t;
+        return 0.5f * (
+            (2f * p1) +
+            (-p0 + p2) * t +
+            (2f * p0 - 5f * p1 + 4f * p2 - p3) * t2 +
+            (-p0 + 3f * p1 - 3f * p2 + p3) * t3);
     }
 
     private static DecodedAudio ReadWaveFile(string path)

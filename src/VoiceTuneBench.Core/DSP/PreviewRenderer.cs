@@ -3,13 +3,16 @@ using VoiceTuneBench.Core.Presets;
 
 namespace VoiceTuneBench.Core.DSP;
 
+/// <summary>Renders a preview of how a preset's EQ and compressor settings will sound.</summary>
 public static class PreviewRenderer
 {
+    /// <summary>Applies ReaEQ-style biquad filters to audio.</summary>
     public static float[] ApplyEqPreview(float[] audio, int sampleRate, IReadOnlyList<EqBand> bands)
     {
         return BiquadFilter.ApplyEq(audio, sampleRate, bands);
     }
 
+    /// <summary>Applies ReaComp-style compressor preview: RMS detection, attack/release, makeup, limiting.</summary>
     public static float[] ApplyCompressorPreview(float[] audio, int sampleRate, CompressorSettings settings)
     {
         var dry = Sanitize(audio);
@@ -58,6 +61,7 @@ public static class PreviewRenderer
         return output;
     }
 
+    /// <summary>Renders a full preset preview: EQ then compressor, capped at 45 seconds, peak-normalized.</summary>
     public static float[] RenderPresetPreview(float[] audio, int sampleRate, CuratedPreset preset)
     {
         var clean = Sanitize(audio);

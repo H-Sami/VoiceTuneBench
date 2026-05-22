@@ -2,7 +2,7 @@
     x:Class="VoiceTuneBench.WinUI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:local="using:VoiceTuneBench.WinUI"
     Title="VoiceTune Bench">
 
     <Grid Background="{ThemeResource VoiceTuneBenchPageBackgroundBrush}" Padding="24" RowSpacing="16">
@@ -101,10 +101,7 @@
                     </Grid>
 
                     <Border Grid.Row="1" Background="{ThemeResource VoiceTuneBenchGraphBackgroundBrush}" CornerRadius="6">
-                        <canvas:CanvasControl
-                            x:Name="SpectrumCanvas"
-                            ClearColor="{StaticResource VoiceTuneBenchGraphBackgroundColor}"
-                            Draw="SpectrumCanvas_Draw" />
+                        <local:SpectrumGraphControl x:Name="SpectrumGraph" />
                     </Border>
                 </Grid>
             </Border>

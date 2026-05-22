@@ -1,7 +1,9 @@
 namespace VoiceTuneBench.Core.Presets;
 
+/// <summary>Provides the six curated speech/podcast presets and their source attribution links.</summary>
 public static class PresetLibrary
 {
+    /// <summary>Maps preset source names to their public reference URLs.</summary>
     public static readonly IReadOnlyDictionary<string, string> SourceLinks = new Dictionary<string, string>
     {
         ["PodRewind EQ Guide"] = "https://podrewind.com/blog/podcast-eq-settings-guide",
@@ -14,8 +16,11 @@ public static class PresetLibrary
         ["StreamGeeks Podcast EQ"] = "https://streamgeeks.us/how-to-eq-a-podcast/",
     };
 
+    /// <summary>Returns all six curated presets.</summary>
     public static IReadOnlyList<CuratedPreset> GetCuratedPresets() => Presets;
 
+    /// <summary>Returns the preset with the given slug, throwing if not found.</summary>
+    /// <exception cref="KeyNotFoundException">Thrown when no preset matches the slug.</exception>
     public static CuratedPreset GetCuratedPreset(string slug)
     {
         return Presets.FirstOrDefault(preset => preset.Slug == slug)

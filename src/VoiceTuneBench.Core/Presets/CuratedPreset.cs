@@ -1,5 +1,6 @@
 namespace VoiceTuneBench.Core.Presets;
 
+/// <summary>All data needed to display a preset and render its preview DSP.</summary>
 public sealed record CuratedPreset(
     string Slug,
     string DisplayName,
